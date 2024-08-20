@@ -4,28 +4,28 @@ Templates and instructions for creating custom scripts for RAYN Vision System An
 <!-- TOC -->
 * [Custom Scripts for RAYN Visions System Analytics](#custom-scripts-for-rayn-visions-system-analytics)
   * [Introduction](#introduction)
-  * [Structure of RVS Analytics scripts](#structure-of-rvs-analytics-scripts)
-    * [Analytics UI elements and .config files (json)](#analytics-ui-elements-and-config-files-json)
-      * [Config file structure](#config-file-structure)
-      * [Available UI elements in the UI dialogues](#available-ui-elements-in-the-ui-dialogues)
-      * [Special cases - dynamic UI elements](#special-cases---dynamic-ui-elements)
-      * [How to call the input from the UI elements in the script](#how-to-call-the-input-from-the-ui-elements-in-the-script)
-    * [Analysis script (python)](#analysis-script-python)
-      * [Functions explained: `create_mask()`](#functions-explained-create_mask)
-      * [Functions explained: `execute()`](#functions-explained-execute)
-      * [Available analyses](#available-analyses)
-  * [Step-by-step instructions on how to create your own RVS script](#step-by-step-instructions-on-how-to-create-your-own-rvs-script)
-    * [1. Develop an analysis workflow](#1-develop-an-analysis-workflow)
-    * [2. Decide which variables in your script you want to expose](#2-decide-which-variables-in-your-script-you-want-to-expose)
-    * [3. Prepare folder and files](#3-prepare-folder-and-files)
-    * [4. Prepare the config file](#4-prepare-the-config-file)
-    * [5. Prepare the mask script (`create_mask()` function)](#5-prepare-the-mask-script-create_mask-function)
-    * [6. Prepare analysis script (`execute()` function)](#6-prepare-analysis-script-execute-function)
-      * [6.1. Get settings](#61-get-settings)
-      * [6.2. Add object analysis](#62-add-object-analysis)
-      * [6.3. Process results](#63-process-results)
+  * [Structure of RVS Analytics Scripts](#structure-of-rvs-analytics-scripts)
+    * [Analytics UI Elements and .config Files (json)](#analytics-ui-elements-and-config-files-json)
+      * [Config File Structure](#config-file-structure)
+      * [Available UI Elements in the UI Dialogues](#available-ui-elements-in-the-ui-dialogues)
+      * [Special Cases - Dynamic UI Elements](#special-cases---dynamic-ui-elements)
+      * [How to Call the Input From the UI Elements in the Script](#how-to-call-the-input-from-the-ui-elements-in-the-script)
+    * [Analysis Script (python)](#analysis-script-python)
+      * [Functions Explained: `create_mask()`](#functions-explained-create_mask)
+      * [Functions Explained: `execute()`](#functions-explained-execute)
+      * [Available Analyses](#available-analyses)
+  * [Step-by-Step Instructions on How to Create Your Own RVS Script](#step-by-step-instructions-on-how-to-create-your-own-rvs-script)
+    * [1. Develop an Analysis Workflow](#1-develop-an-analysis-workflow)
+    * [2. Decide Which Variables in Your Script You Want to Expose](#2-decide-which-variables-in-your-script-you-want-to-expose)
+    * [3. Prepare Folder and Files](#3-prepare-folder-and-files)
+    * [4. Prepare the .config File](#4-prepare-the-config-file)
+    * [5. Prepare the Mask Script (`create_mask()` Function)](#5-prepare-the-mask-script-create_mask-function)
+    * [6. Prepare Analysis Script (`execute()` Function)](#6-prepare-analysis-script-execute-function)
+      * [6.1. Get Settings](#61-get-settings)
+      * [6.2. Add Object Analysis](#62-add-object-analysis)
+      * [6.3. Process Results](#63-process-results)
     * [7. Write a README](#7-write-a-readme)
-    * [8. Add the custom script to RVS Analytics](#8-add-the-custom-script-to-rvs-analytics)
+    * [8. Add the Custom Script to RVS Analytics](#8-add-the-custom-script-to-rvs-analytics)
   * [Support](#support)
   * [Contributing](#contributing)
 <!-- TOC -->
@@ -34,32 +34,30 @@ Templates and instructions for creating custom scripts for RAYN Vision System An
 RAYN Vision System (RVS) Analytics is an open-source application for the processing
 and analysis of hyper- and multispectral images from multiple sources, including RVS Cameras
 online in the same network. It is based on [PlantCV](https://github.com/danforthcenter/plantcv),
-an open-source image analysis software package targeted for plant phenotyping.
+an open-source image analysis software package targeted for plant phenotyping, and uses PlantCV workflows with a 
+customizable user interface.
 
-The application itself does not contain any analysis scripts out of the box*. It is a framework for PlantCV workflows
-with a customizable user interface. The scripts can be added through the "Masks" and "Scripts" folders. You can use 
-pre-made scripts or create your own. 
+Analysis and mask scripts from the RAYN repositories are included with the Windows installer of RVS Analytics. 
+The raw application code, which does not contain any scripts, is also available for download via 
+[GitHub](https://github.com/rayngrowingsystems/RVS_Analytics). Mask and Analysis scripts can always be added through 
+the "Masks" and "Scripts" folders. You can use pre-made scripts or create your own.
 
-Scripts created by the RAYN as well as from the community can be retrieved from the following repositories:
-- [RVS-A Mask Scripts (Development)]()
-- [RVS-A Analysis Scripts (Development)]()
+Both official RAYN and community-created scripts can be retrieved from the following repositories:
+- [RVS-A Mask Scripts](https://github.com/rayngrowingsystems)
+- [RVS-A Analysis Scripts](https://github.com/rayngrowingsystems/RVS-A_analysis_scripts)
 
-*The Windows installer of RVS Analytics already contains the analysis scripts and mask scripts from 
-the RAYN repositories
-
-## Structure of RVS Analytics scripts
-RVS Scripts consist of a python file containing the code workflow accompanied by a .config file (json format) which
+## Structure of RVS Analytics Scripts
+RVS Scripts consist of a Python file containing the code workflow accompanied by a .config file (json format) which
 defines UI elements. Both files have to be in the same folder and must have the same name. 
 
-### Analytics UI elements and .config files (json)
-RVS Analytics allows you to customize the "Masking", "Script Options" and "Chart Options" dialogues. You can add
+### Analytics UI Elements and .config Files (json)
+RVS Analytics allows you to customize the "Masking", "Script Options", and "Chart Options" dialogues. You can add
 UI elements and call the respective selected items/values in the mask or analysis script.
 
-#### Config file structure
-The .config file is in json format. It contains the configurations for `mask`, `script` and `chart`. Each configuration
-section contains an `info` object and `options` containing an array of UI element definitions.
-
-⚠️ NOTE: mask scripts are special cases and only contain the configurations for `mask`.
+#### Config File Structure
+The .config file is in json format. Analysis script config files contains the configurations for `mask`, `script`, and 
+`chart`. Mask script config files only contain configurations for `mask`. Each configuration section contains an `info` 
+object and `options` containing an array of UI element definitions.
 
 Each UI element in the `options` array can have different items depending on the type. However, the following
 are always required:
@@ -69,7 +67,7 @@ are always required:
 - `type` - Defines the UI element type (see [Available UI elements in the UI dialogues](#available-ui-elements-in-the-ui-dialogues))
 - `value` - Default value (either float, integer or bool)
 
-Here is an example of the content of a config file for an analysis script. 
+Here is an example of the content of a config file for an analysis script:
 
 ```json
 {
@@ -84,7 +82,7 @@ Here is an example of the content of a config file for an analysis script.
     "options":
     [
       {
-        "displayName": "Example wavelength dropdown",
+        "displayName": "Example wavelength drop-down",
         "name": "wavelength",
         "hint": "Select wavelength",
         "type": "wavelength",
@@ -136,30 +134,30 @@ Here is an example of the content of a config file for an analysis script.
 ```
 
 
-#### Available UI elements in the UI dialogues
+#### Available UI Elements in the UI Dialogues
 
-| type                  | Masking | Script Options  | Chart Options |
-|-----------------------|---------|-----------------|---------------|
-| checkBox              | ✔️      | ✔️              | ✔️            |
-| slider                | ✔️      | ✔️              | ✔️            |
-| dropdown              | ✔️      | ✔️              | ✔️            |
-| wavelength (dropdown) | ✔️      | ❌               | ❌             |
+| type                   | Masking | Script Options | Chart Options |
+|------------------------|---------|----------------|---------------|
+| checkBox               | ✔️      | ✔️             | ✔️            |
+| slider                 | ✔️      | ✔️             | ✔️            |
+| drop-down              | ✔️      | ✔️             | ✔️            |
+| wavelength (drop-down) | ✔️      | ❌              | ❌             |
 
 
-The wavelength dropdown menu is a special UI element. It is automatically filled with the wavelength bands available
+The wavelength drop-down menu is a special UI element. It is automatically filled with the wavelength bands available
 in the hyper/multispectral image. 
 
 Check out the template scripts for usage examples.
 
-#### Special cases - dynamic UI elements
-Dropdowns items and slider limits can be set dynamically. For this to work, you have to add the 
-`"getValuesFor": IDENTIFIER` (dropdown) or `"getRangesFor": IDENTIFIER` (slider) item to the respective UI element options in the config file and set it to a 
-function that is called to get the respective items (dropdown) or slider parameter (slider).
+#### Special Cases - Dynamic UI Elements
+drop-downs items and slider limits can be set dynamically. For this to work, you have to add the 
+`"getValuesFor": IDENTIFIER` (drop-down) or `"getRangesFor": IDENTIFIER` (slider) item to the respective UI element options in the config file and set it to a 
+function that is called to get the respective items (drop-down) or slider parameter (slider).
 
-Here is an example of a dropdown menu to select an index. The respective threshold slider is adjusted according to the
+Here is an example of a drop-down menu to select an index. The respective threshold slider is adjusted according to the
 selected index.
 
-Content of the .config file
+Content of the .config file:
 ```json
 [
   {
@@ -179,7 +177,7 @@ Content of the .config file
   }
 ]
 ```
-Respective functions in the python script file
+Respective functions in the Python script file:
 ```python
 def dropdown_values(setting, wavelengths):  # fills UI element with values
     if setting == "index_list":  # defines the UI elements this is applied to
@@ -215,20 +213,20 @@ def range_values(setting, name, index):  # sets the slider ranges (see .config f
 
 
 
-#### How to call the input from the UI elements in the script
-The input received thought the added UI elements is saved and handed over to the mask and analysis script via a nested 
-(python) settings dictionary. The dictionary object is named `settings` and can be accessed by all functions in the 
-python file.
+#### How to Call the Input From the UI Elements in the Script
+The input received through the added UI elements is saved and handed over to the mask and analysis script via a nested 
+(Python) settings dictionary. The dictionary object is named `settings` and can be accessed by all functions in the 
+Python file.
 
-The path to the respective options is the following:
+The paths to the respective options are the following:
 - Mask options: `mask_options = settings["experimentSettings"]["analysis"]["maskOptions"]`
 - Script options: `script_options = settings["experimentSettings"]["scriptOptions"]["general"]`
 - Chart options: `chart_options = settings["experimentSettings"]["analysis"]["chartOptions"]`
 
-The values of the UI elements can then be called with the `name` set in the config file.
+The values of the UI elements can then be called with the `name` set in the config file:
 ```json
 {
-  "displayName": "Example custom dropdown",
+  "displayName": "Example custom drop-down menu",
   "name": "custom_dropdown",
   "type": "dropdown",
   "displayNames": ["Example 1", "Example 2", "Example 3", "Example 4", "Example 5"],
@@ -236,16 +234,16 @@ The values of the UI elements can then be called with the `name` set in the conf
   "value": "0"
 }
 ```
-In this case the selected option in the dropdown can be retrieved via
-`value_custom_dropdown = mask_options["custom_dropdown"]`
+In this case the selected option in the drop-down can be retrieved via
+`value_custom_dropdown = mask_options["custom_dropdown"]`.
 
-In dropdown menus, `displayNames` lists all the items in the dropdown menu (as they are displayed). `names` contains the 
+In drop-down menus, `displayNames` lists all the items in the drop-down menu (as they are displayed). `names` contains the 
 respective value that is returned when a corresponding item was selected (e.g. in this case, if "Example 5" was selected, 
-`value_custom_dropdow` is `example_4`).
+`value_custom_dropdown` is `example_5`).
 
-### Analysis script (python)
+### Analysis Script (Python)
 
-The analysis script is written in python. It only contains functions that are called by RVS Analytics. The main
+The analysis script is written in Python and only contains functions that are called by RVS Analytics. The main
 functions are:
 - `create_mask()` - processes the hyper/multispectral image file and creates a mask
 - `execute()` - main function running the analysis workflow
@@ -260,11 +258,10 @@ The following parameters are automatically provided by RVS Analytics and can be 
 Please see the template scripts and function documentation for more information. 
 
 ⚠️ NOTE: 
-- the mask script is a special case - it only contains `create_mask()` as main function.
-- currently there are utility functions in the scripts (e.g. `prepare_spectral_data()` or `process_rois()`)
-which might be (re)moved to the rayn_utils python module at some point
+- some utility functions in the scripts (e.g. `prepare_spectral_data()` or `process_rois()`) may be moved to the 
+rayn_utils python module at some point.
 
-#### Functions explained: `create_mask()`
+#### Functions Explained: `create_mask()`
 Default mask workflow (if inside an analysis script) or additional mask script. 
 Selection of mask scripts is possible in the UI.
 - Input: settings dictionary
@@ -273,9 +270,9 @@ Selection of mask scripts is possible in the UI.
 There are numerous ways to create a binary mask to segment objects (plants). Please refer to [this guide in the PlantCV 
 documentation](https://plantcv.readthedocs.io/en/stable/analysis_approach/#object-segmentation-approaches). 
 
-#### Functions explained: `execute()`
-Contains the analysis workflow. It will be applied in a loop on all files in a folder, single images or incoming images
-(depending on the respective source set)
+#### Functions Explained: `execute()`
+Contains the analysis workflow. It will be applied in a loop on all files in a folder, single images, or incoming images
+(depending on the respective source set).
 - Input: feedback queue reference, script name, settings dictionary and mask function
 - Output: results are sent to the feedback queue and collected by RVS Analytics
 
@@ -288,13 +285,13 @@ The analysis workflow can be separated into the following consecutive steps:
 for each ROI. Respective display names (graph title and y-axis label) can be returned with the function 
 `get_display_name_for_chart`.
 
-#### Available analyses
-We recommend to use the object analysis methods available in PlantCV to analyze your samples, however, you are not
-limited to them. Here we will briefly describe the analysis options available in PlantCV Please refer to documentation
+#### Available Analyses
+While we recommended using the object analysis methods available in PlantCV to analyze your samples, you are not
+limited to them. Here we will briefly describe the analysis options available in PlantCV. Please refer to documentation
 [Object Analysis in PlantCV](https://plantcv.readthedocs.io/en/stable/analysis_approach/#2-object-analysis-in-plantcv)
 for more information. 
 
-There are currently five main categories of object analysis in PlantCV.
+There are currently five main categories of object analysis in PlantCV:
 - Object shape parameters:
   - analyze.size
   - analyze.bound_horizontal
@@ -306,84 +303,83 @@ There are currently five main categories of object analysis in PlantCV.
   - analyze.yii
 - Object classification
   - naive-bayesian multiclass mode
-- Object hyperspectral parameters:
+- Object hyperspectral parameters
   - analyze.spectral_reflectance
   - analyze.spectral_index functions. 
-- Morphological parameters (check "Morphology Functions" in the [PlantCV documentation](https://plantcv.readthedocs.io/en/stable/))
+- Morphological parameters ("Morphology Functions" in the [PlantCV documentation](https://plantcv.readthedocs.io/en/stable/))
   - stem height
   - leaf length
   - leaf angle
   - and more ...
 
-## Step-by-step instructions on how to create your own RVS script
+## How to Create Your Own RVS Script
 
-Since RVS Analytics is a wrapper for PlantCV functions, you can refer to the 
+Since RVS Analytics uses PlantCV functions, you can refer to the 
 [PlantCV documentation](https://plantcv.readthedocs.io/en/stable/) or 
 [Approaches to Image Analysis with PlantCV](https://plantcv.readthedocs.io/en/stable/analysis_approach/) for background
 information and instructions.
 
-The following step-by-step instructions focuses on the essentials for creating a functional mask or analysis script
+The following step-by-step instructions focus on the essentials for creating a functional mask or analysis script
 for RVS Analytics.
 
-### 1. Develop an analysis workflow
-We recommend using interactive notebooks (jupyter) to develop and image processing workflow. You can find great 
+### 1. Develop an Analysis Workflow
+We recommend using interactive notebooks (jupyter) to develop an image processing workflow. You can find 
 [Tutorials](https://plantcv.readthedocs.io/en/stable/#tutorials) and instructions
 on [Workflow Development](https://plantcv.readthedocs.io/en/stable/analysis_approach/#developing-image-processing-workflows-workflow-development)
 in the PlantCV documentation.
 
 The most important part of an analysis script is the object segmentation (masking). There are different approaches to
-object segmentation. Currently, mask scripts provided by RAYN only uses binary thresholding on grayscale images (index values
-or single wavelength images) to create a binary mask. However, there are a lot more approaches for object segmentation
-e.g. automatic thresholding, background subtraction or machine learning. 
+object segmentation. Currently, mask scripts provided by RAYN only use binary thresholding on grayscale images (index 
+values or single wavelength images) to create a binary mask. However, there are many other approaches for object 
+segmentation e.g. automatic thresholding, background subtraction or machine learning. 
 
-### 2. Decide which variables in your script you want to expose
+### 2. Decide Which Variables in Your Script You Want to Expose
 The analysis workflow usually contains variables that might need to be adjusted depending on the image set that is
-analyzed. Depending on variable type you need to choose the UI elements you want to use. 
+analyzed. Depending on variable type, you need to choose the UI elements you want to use. 
 
 The mask scripts provided by RAYN usually expose the threshold through a slider element. Additional options such as
-pixel dilation can be (de)activate through a checkbox. It is also possible to fill dropdown menus e.g. with all the 
+pixel dilation can be toggled with a checkbox. It is also possible to fill drop-down menus e.g. with all the 
 indices that can be analyzed. All available UI elements are listed here: 
 [Available UI elements in the UI dialogues](#available-ui-elements-in-the-ui-dialogues). See the template scripts and 
 existing RVS scripts for examples.
 
-### 3. Prepare folder and files
+### 3. Prepare Folder and Files
 Copy the full "template_analysis_script" or "template_mask_script" folder from this repository. Rename the folder, 
-script file (.py) and the . config file with the script name you chose (apart from the extension, 
-names should be identical). The folder should contain three files:
+script file (.py) and the .config file with the script name you chose. Apart from the extension, 
+the names should be identical. The folder should contain three files:
 - SCRIPT.py
 - SCRIPT.config
 - README
 
-### 4. Prepare the config file
+### 4. Prepare the .config File
 See [Analytics UI elements and .config files (json)](#analytics-ui-elements-and-config-files-json).
 
-Change the config file and add UI elements based on the previous step: 
-[2. Decide which variables in your script you want to expose](#2-decide-which-variables-in-your-script-you-want-to-expose)
+Change the config file and add UI elements based on those chosen in step 2.
 
-### 5. Prepare the mask script (`create_mask()` function)
+### 5. Prepare the Mask Script (`create_mask()` Function)
 See [Functions explained: `create_mask()`](#functions-explained-create_mask).
 
 Get all the values from the UI elements in the "Masking" dialogue through the mask options in the settings dictionary
 (see template scripts). Add the steps (code) to create a binary mask of the workflow you developed (replace the code
 between BEGIN and END EXAMPLE MASK ACTION in the template scripts). 
 
-### 6. Prepare analysis script (`execute()` function)
+### 6. Prepare Analysis Script (`execute()` Function)
 See [Functions explained: `execute()`](#functions-explained-execute) and [Available analyses](#available-analyses).
 
-⚠️ Skip this step if you only want to create a mask script.
+⚠️ Skip this step when creating a mask script.
 
-#### 6.1. Get settings
+#### 6.1. Get Settings
 Get all the values from the UI elements in the "Script Options" and "Chart Options" through the script and chart options
-in the settings dictionary. The ROIs are selected in the RVS Analytics UI and can be retrieved from the settings dictionary 
-as well (`settings["experimentSettings"]["roiInfo"]["roiItems"]`).
+in the settings dictionary. The ROIs are selected in the RVS Analytics UI and can also be retrieved from the settings 
+dictionary (`settings["experimentSettings"]["roiInfo"]["roiItems"]`).
 
-#### 6.2. Add object analysis
+#### 6.2. Add Object Analysis
 Add the analysis steps (code) of your workflow (alter or replace the code below "EXAMPLE analyzing objects" in the 
 template script). 
 
-#### 6.3. Process results
-The results of the image analysis are signaled back to queue and collected by RVS Analytics. However, currently the 
-results have to be processed and put into a result dictionary. See the template script for an example.
+#### 6.3. Process Results
+The results of the image analysis are signaled back to queue and collected by RVS Analytics. The 
+results will be processed and put into a result dictionary. See the template script for an example.
 
 NOTE: If you want a parameter to be displayed in the "Chart", you need to add the value as `"plot_value"` to the results
 list. Chart title and y-axis label can be set with the `get_display_name_for_chart()` function.
@@ -392,17 +388,23 @@ list. Chart title and y-axis label can be set with the `get_display_name_for_cha
 It is a good practice to write a README describing the functionality of your script. See the template README and 
 existing RVS Analytics scripts for examples.
 
-### 8. Add the custom script to RVS Analytics
-Copy the folder with the three files to RVS Analytics. Depending on its type, add it either to the "Masks" or "Scripts"
-folder. The directories are scanned for scripts - organizing them in subfolders are allowed as well.
+### 8. Add the Custom Script to RVS Analytics
+Copy the folder with the three files either to the "Masks" or "Scripts" folder of RVS Analytics. You may use subfolders
+to further organize these script directories
 
 ## Support
 If you experience any problems or have feedback on the analysis scripts, please add an issue to this repository or 
-contact [Alexander Kutschera](mailto:alexander.kutschera@rayngrowingsystems.com).
+contact [RAYN Vision Support](mailto:RAYNVisionSupport@rayngrowingsystems.com).
 
 ## Contributing
-We welcome contributions. If it's fixing bugs, adding functionality to existing scripts
-or adding entirely new scipts.
+Whether it's fixing bugs, adding functionality to existing scripts, or adding entirely new scripts, we welcome
+contributions.
 
-Please add any suggestions/issues/bugs as issues in the [RVS Analytics custom scripts repository]().
+Please add any suggestions, problems, or bugs as issues in the [RVS Analytics custom scripts repository]().
 
+## License and Copyright
+© 2024 ETC Inc d/b/a RAYN Growing Systems. The instructions are licensed under the Apache License, Version 2.0
+
+Trademark and patent info: [rayngrowingsystems.com/ip](https://rayngrowingsystems.com/ip/) \
+Third-party license agreement info: [etcconnect.com/licenses](https://www.etcconnect.com/licenses/). \
+Product and specifications subject to change.
